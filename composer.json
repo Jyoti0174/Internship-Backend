@@ -1,15 +1,12 @@
 {
-    "name": "app/internship-backend",
-    "type": "project",
+    "name": "laravel/laravel",
     "description": "Internship Backend API - Laravel 11",
-    "keywords": [
-        "laravel",
-        "framework"
-    ],
+    "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
