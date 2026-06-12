@@ -3,67 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreTicketRequest;
+use App\Http\Requests\UpdateTicketRequest;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::with('user')->latest()->get();
-        return view('tickets.index', compact('tickets'));
+        $tickets = Ticket::with(['user', 'assignedTo', 'department'])
+                         ->latest()
+                         ->get();
+        return response()->json($tickets);
     }
 
-    public function create()
+    public function store(StoreTicketRequest $request)
     {
-        return view('tickets.create');
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string',
-            'status'      => 'required|in:open,in_progress,closed',
-            'priority'    => 'required|in:low,medium,high',
-            'user_id'     => 'required|exists:users,id',
-        ]);
-
-        Ticket::create($validated);
-        return redirect()->route('tickets.index');
+        $ticket = Ticket::create($request->validated());
+        return response()->json($ticket->load(['user', 'assignedTo', 'department']), 201);
     }
 
     public function show($id)
     {
-        $ticket = Ticket::with('user')->findOrFail($id);
-        return view('tickets.show', compact('ticket'));
+        $ticket = Ticket::with(['user', 'assignedTo', 'department'])->findOrFail($id);
+        return response()->json($ticket);
     }
 
-    public function edit($id)
+    public function update(UpdateTicketRequest $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
-        return view('tickets.edit', compact('ticket'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $ticket = Ticket::findOrFail($id);
-
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string',
-            'status'      => 'required|in:open,in_progress,closed',
-            'priority'    => 'required|in:low,medium,high',
-            'user_id'     => 'required|exists:users,id',
-        ]);
-
-        $ticket->update($validated);
-        return redirect()->route('tickets.index');
+        $ticket->update($request->validated());
+        return response()->json($ticket->load(['user', 'assignedTo', 'department']));
     }
 
     public function destroy($id)
     {
         $ticket = Ticket::findOrFail($id);
         $ticket->delete();
-        return redirect()->route('tickets.index');
+        return response()->json(['message' => 'Ticket deleted successfully']);
     }
 }
