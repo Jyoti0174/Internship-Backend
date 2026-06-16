@@ -324,12 +324,6 @@ If you discover a security vulnerability, please send an e-mail to the project m
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-Step 3 — Terminal mein push karo:
-bashgit add README.md
-git commit -m "docs: add complete project README with helpdesk overview"
-git push origin main
-Iske baad GitHub pe refresh karo — Laravel logo + badges + poora project overview dikh jayega! 🚀You said: i also want to add flow chart how can i add it in my readmei also want to add flow chart how can i add it in my readme11:55 AMClaude responded: Aap README mein flowchart add kar sakte ho Mermaid se — GitHub directly Mermaid diagrams render karta hai, koi image ki zarurat nahi!Aap README mein flowchart add kar sakte ho Mermaid se — GitHub directly Mermaid diagrams render karta hai, koi image ki zarurat nahi!
-Apni README.md mein ye section add karo jahan chahiye:
 
 markdown## 🔄 System Flowchart
 
@@ -368,12 +362,4 @@ flowchart TD
     Q --> X([✅ Ticket Closed])
 ```
 
-GitHub pe push karo:
-bashgit add README.md
-git commit -m "docs: add system flowchart using mermaid"
-git push origin main
-GitHub pe ye automatically render hoga aise:
-User → Login → Role Check
-                ├── Employee  → Create Ticket → Notifications
-                ├── Agent     → Manage Tickets → Resolve
-                └── Admin     → Full Control → Reports
+
