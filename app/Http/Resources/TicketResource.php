@@ -40,6 +40,19 @@ class TicketResource extends JsonResource
 
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
+            'comments' => $this->whenLoaded('comments', function () {
+    return $this->comments->map(function ($comment) {
+        return [
+            'id'           => $comment->id,
+            'body'         => $comment->body,
+            'commented_by' => [
+                'id'   => $comment->user->id,
+                'name' => $comment->user->name,
+            ],
+            'created_at' => $comment->created_at?->toIso8601String(),
+        ];
+    });
+}),
         ];
     }
 }

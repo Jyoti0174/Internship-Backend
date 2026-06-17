@@ -43,7 +43,7 @@ class TicketController extends Controller
 
     public function show($id)
     {
-        $ticket = Ticket::with(['user', 'assignedTo', 'department'])->findOrFail($id);
+        $ticket = Ticket::with(['user', 'assignedTo', 'department', 'comments.user'])->findOrFail($id);
         return new TicketResource($ticket);
     }
 

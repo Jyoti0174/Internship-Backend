@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Comment;
 
 class Ticket extends Model
 {
@@ -32,5 +33,10 @@ class Ticket extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }
