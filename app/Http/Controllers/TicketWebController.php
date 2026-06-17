@@ -10,7 +10,7 @@ class TicketWebController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::with('user')->orderBy('id', 'asc')->get();
+        $tickets = Ticket::with(['user', 'assignedTo'])->orderBy('id', 'asc')->get();
         return view('tickets.index', compact('tickets'));
     }
 

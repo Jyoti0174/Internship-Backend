@@ -14,6 +14,7 @@
         <th>Title</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Assigned To</th>
         <th>Actions</th>
     </tr>
     @foreach($tickets as $ticket)
@@ -22,6 +23,7 @@
         <td>{{ $ticket->title }}</td>
         <td>{{ $ticket->status }}</td>
         <td>{{ $ticket->priority }}</td>
+        <td>{{ $ticket->assignedTo?->name ?? 'Unassigned' }}</td>
         <td>
             <a href="{{ route('tickets.show', $ticket->id) }}">View</a>
             <a href="{{ route('tickets.edit', $ticket->id) }}">Edit</a>

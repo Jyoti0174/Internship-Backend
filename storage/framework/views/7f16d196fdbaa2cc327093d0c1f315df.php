@@ -14,6 +14,7 @@
         <th>Title</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Assigned To</th>
         <th>Actions</th>
     </tr>
     <?php $__currentLoopData = $tickets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -22,6 +23,7 @@
         <td><?php echo e($ticket->title); ?></td>
         <td><?php echo e($ticket->status); ?></td>
         <td><?php echo e($ticket->priority); ?></td>
+        <td><?php echo e($ticket->assignedTo?->name ?? 'Unassigned'); ?></td>
         <td>
             <a href="<?php echo e(route('tickets.show', $ticket->id)); ?>">View</a>
             <a href="<?php echo e(route('tickets.edit', $ticket->id)); ?>">Edit</a>
