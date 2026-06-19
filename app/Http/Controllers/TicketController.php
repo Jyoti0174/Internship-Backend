@@ -60,4 +60,18 @@ class TicketController extends Controller
         $ticket->delete();
         return response()->json(['message' => 'Ticket deleted successfully']);
     }
+    public function stats()
+{
+    $stats = [
+        'total_tickets'         => Ticket::count(),
+        'open_tickets'          => Ticket::where('status', 'open')->count(),
+        'closed_tickets'        => Ticket::where('status', 'closed')->count(),
+        'high_priority_tickets' => Ticket::where('priority', 'high')->count(),
+    ];
+
+    return response()->json([
+        'success' => true,
+        'data'    => $stats,
+    ], 200);
+}
 }
