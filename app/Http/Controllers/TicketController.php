@@ -60,17 +60,34 @@ class TicketController extends Controller
         $ticket->delete();
         return response()->json(['message' => 'Ticket deleted successfully']);
     }
-    public function stats()
+   public function stats()
 {
     $stats = [
-        'total_tickets'         => Ticket::count(),
-        'open_tickets'          => Ticket::where('status', 'open')->count(),
-        'closed_tickets'        => Ticket::where('status', 'closed')->count(),
-        'high_priority_tickets' => Ticket::where('priority', 'high')->count(),
+        'total_tickets' => [
+            'label' => 'Total Tickets',
+            'count' => Ticket::count(),
+        ],
+        'open_tickets' => [
+            'label' => 'Open Tickets',
+            'count' => Ticket::where('status', 'open')->count(),
+        ],
+        'in_progress_tickets' => [
+            'label' => 'In Progress Tickets',
+            'count' => Ticket::where('status', 'in_progress')->count(),
+        ],
+        'closed_tickets' => [
+            'label' => 'Closed Tickets',
+            'count' => Ticket::where('status', 'closed')->count(),
+        ],
+        'high_priority_tickets' => [
+            'label' => 'High Priority Tickets',
+            'count' => Ticket::where('priority', 'high')->count(),
+        ],
     ];
 
     return response()->json([
         'success' => true,
+        'message' => 'Dashboard statistics fetched successfully.',
         'data'    => $stats,
     ], 200);
 }
