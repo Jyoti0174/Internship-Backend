@@ -45,12 +45,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(Department::class);
     }
-<<<<<<< HEAD
 
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
-=======
->>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
 }

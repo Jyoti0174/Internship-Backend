@@ -9,9 +9,8 @@ use App\Http\Controllers\AuthController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public ticket stats
 Route::get('/tickets/stats', [TicketController::class, 'stats']);
- Updated upstream
-Route::apiResource('tickets', TicketController::class);
 
 // Protected routes - Sanctum middleware
 Route::middleware('auth:sanctum')->group(function () {
@@ -24,7 +23,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tickets', TicketController::class);
 
 });
-  15305da (install and configure Laravel Sanctum Authentication)
-
-Route::apiResource('tickets', TicketController::class)->withoutMiddleware('auth:sanctum');
- Stashed changes

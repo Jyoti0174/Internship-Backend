@@ -14,11 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();  
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        Updated upstream
-        //
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -26,5 +24,4 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 401);
             }
         });
-         Stashed changes
     })->create();
