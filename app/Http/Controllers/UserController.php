@@ -13,6 +13,30 @@ class UserController extends Controller
         $users = User::with('department')->get();
         return response()->json($users);
     }
+    // POST /api/users - Create new user (Admin only)
+public function store(Request $request)
+{
+    $request->validate([
+        'name'          => 'required|string|max:255',
+        'email'         => 'required|string|email|max:255|unique:users',
+        'password'      => 'required|string|min:8',
+        'role'          => 'nullable|in:admin,agent,employee',
+        'department_id' => 'nullable|exists:departments,id',
+    ]);
+
+    $user = User::create([
+        'name'          => $request->name,
+        'email'         => $request->email,
+        'password'      => Hash::make($request->password),
+        'role'          => $request->role ?? 'employee',
+        'department_id' => $request->department_id,
+    ]);
+
+    return response()->json([
+        'message' => 'User created successfully',
+        'user'    => $user->load('department'),
+    ], 201);
+}
 
     public function show($id)
     {
