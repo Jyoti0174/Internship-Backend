@@ -3,7 +3,11 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
+<<<<<<< HEAD
         'reference' => 'ad5d0c30f539877a606776f539647c0f31d5c697',
+=======
+        'reference' => '382f852d584aad4fab3b6caaf4dcc3b09fd475e5',
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -388,7 +392,11 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
+<<<<<<< HEAD
             'reference' => 'ad5d0c30f539877a606776f539647c0f31d5c697',
+=======
+            'reference' => '382f852d584aad4fab3b6caaf4dcc3b09fd475e5',
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

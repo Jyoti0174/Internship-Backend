@@ -21,6 +21,16 @@ class Ticket extends Model
         'department_id',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($ticket) {
+            $lastNumber = self::max('ticket_number') ?? 0;
+            $ticket->ticket_number = $lastNumber + 1;
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -35,9 +45,12 @@ class Ticket extends Model
     {
         return $this->belongsTo(Department::class);
     }
+<<<<<<< HEAD
 
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
+=======
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
 }

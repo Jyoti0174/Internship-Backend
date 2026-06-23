@@ -3,11 +3,26 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\AuthController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Public routes - Auth
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
+<<<<<<< HEAD
 Route::get('/tickets/stats', [TicketController::class, 'stats']);
 
 Route::apiResource('tickets', TicketController::class);
+=======
+// Protected routes - Sanctum middleware
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+
+    // Tickets
+    Route::apiResource('tickets', TicketController::class);
+
+});
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)

@@ -55,11 +55,17 @@ class TicketController extends Controller
     }
 
     public function destroy($id)
-    {
-        $ticket = Ticket::findOrFail($id);
-        $ticket->delete();
-        return response()->json(['message' => 'Ticket deleted successfully']);
+{
+    $ticket = Ticket::findOrFail($id);
+    $ticket->delete();
+
+    // Resequence all remaining tickets using DB directly
+    $tickets = Ticket::orderBy('id')->get();
+    $i = 1;
+    foreach ($tickets as $t) {
+        \DB::table('tickets')->where('id', $t->id)->update(['ticket_number' => $i++]);
     }
+<<<<<<< HEAD
    public function stats()
 {
     $stats = [
@@ -90,5 +96,9 @@ class TicketController extends Controller
         'message' => 'Dashboard statistics fetched successfully.',
         'data'    => $stats,
     ], 200);
+=======
+
+    return response()->json(['message' => 'Ticket deleted successfully']);
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
 }
 }

@@ -4,7 +4,11 @@
 
 namespace Composer\Autoload;
 
+<<<<<<< HEAD
 class ComposerStaticInitf8fe8f447924cb59d027023fe5e638c2
+=======
+class ComposerStaticInit760cab8be7b157ecc316f60dadf550a3
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -7127,9 +7131,15 @@ class ComposerStaticInitf8fe8f447924cb59d027023fe5e638c2
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+<<<<<<< HEAD
             $loader->prefixLengthsPsr4 = ComposerStaticInitf8fe8f447924cb59d027023fe5e638c2::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitf8fe8f447924cb59d027023fe5e638c2::$prefixDirsPsr4;
             $loader->classMap = ComposerStaticInitf8fe8f447924cb59d027023fe5e638c2::$classMap;
+=======
+            $loader->prefixLengthsPsr4 = ComposerStaticInit760cab8be7b157ecc316f60dadf550a3::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit760cab8be7b157ecc316f60dadf550a3::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit760cab8be7b157ecc316f60dadf550a3::$classMap;
+>>>>>>> 15305da (install and configure Laravel Sanctum Authentication)
 
         }, null, ClassLoader::class);
     }
