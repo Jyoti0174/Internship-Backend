@@ -1,7 +1,5 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -20,8 +18,14 @@ class UserSeeder extends Seeder
 
         $users = [
             // Admins
-            ['name' => 'Super Admin',      'email' => 'admin@helpdesk.com',   'password' => Hash::make('password'), 'role' => 'admin',    'department_id' => $it],
-            ['name' => 'HR Admin',         'email' => 'hradmin@helpdesk.com', 'password' => Hash::make('password'), 'role' => 'admin',    'department_id' => $hr],
+            ['name' => 'Super Admin',      'email' => 'admin@helpdesk.com',    'password' => Hash::make('password'), 'role' => 'admin',    'department_id' => $it],
+            ['name' => 'HR Admin',         'email' => 'hradmin@helpdesk.com',  'password' => Hash::make('password'), 'role' => 'admin',    'department_id' => $hr],
+
+            // Managers
+            ['name' => 'IT Manager',       'email' => 'itmanager@helpdesk.com',  'password' => Hash::make('password'), 'role' => 'manager', 'department_id' => $it],
+            ['name' => 'HR Manager',       'email' => 'hrmanager@helpdesk.com',  'password' => Hash::make('password'), 'role' => 'manager', 'department_id' => $hr],
+            ['name' => 'Finance Manager',  'email' => 'finmanager@helpdesk.com', 'password' => Hash::make('password'), 'role' => 'manager', 'department_id' => $finance],
+            ['name' => 'Ops Manager',      'email' => 'opsmanager@helpdesk.com', 'password' => Hash::make('password'), 'role' => 'manager', 'department_id' => $ops],
 
             // IT Department
             ['name' => 'Rahul Sharma',     'email' => 'rahul@example.com',    'password' => Hash::make('password'), 'role' => 'employee', 'department_id' => $it],
@@ -52,7 +56,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::create($user);
+            User::firstOrCreate(['email' => $user['email']], $user);
         }
     }
 }

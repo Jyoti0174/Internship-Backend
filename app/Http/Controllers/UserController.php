@@ -20,7 +20,7 @@ public function store(Request $request)
         'name'          => 'required|string|max:255',
         'email'         => 'required|string|email|max:255|unique:users',
         'password'      => 'required|string|min:8',
-        'role'          => 'nullable|in:admin,agent,employee',
+        'role' => 'nullable|in:admin,agent,employee,manager',
         'department_id' => 'nullable|exists:departments,id',
     ]);
 
@@ -52,7 +52,7 @@ public function store(Request $request)
             'name'          => 'sometimes|string|max:255',
             'email'         => 'sometimes|email|unique:users,email,'.$id,
             'password'      => 'sometimes|string|min:8',
-            'role'          => 'sometimes|in:admin,agent,employee',
+            'role' => 'sometimes|in:admin,agent,employee,manager',
             'department_id' => 'sometimes|nullable|exists:departments,id',
         ]);
 
