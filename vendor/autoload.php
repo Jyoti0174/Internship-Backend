@@ -19,8 +19,4 @@ if (PHP_VERSION_ID < 50600) {
 
 require_once __DIR__ . '/composer/autoload_real.php';
 
-<<<<<<< HEAD
-return ComposerAutoloaderInitf8fe8f447924cb59d027023fe5e638c2::getLoader();
-=======
 return ComposerAutoloaderInit760cab8be7b157ecc316f60dadf550a3::getLoader();
->>>>>>> 15305da (install and configure Laravel Sanctum Authentication)

@@ -6,12 +6,14 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\TicketController' => $baseDir . '/app/Http/Controllers/TicketController.php',
     'App\\Http\\Controllers\\TicketWebController' => $baseDir . '/app/Http/Controllers/TicketWebController.php',
     'App\\Http\\Requests\\StoreTicketRequest' => $baseDir . '/app/Http/Requests/StoreTicketRequest.php',
     'App\\Http\\Requests\\UpdateTicketRequest' => $baseDir . '/app/Http/Requests/UpdateTicketRequest.php',
     'App\\Http\\Resources\\TicketResource' => $baseDir . '/app/Http/Resources/TicketResource.php',
+    'App\\Models\\Comment' => $baseDir . '/app/Models/Comment.php',
     'App\\Models\\Department' => $baseDir . '/app/Models/Department.php',
     'App\\Models\\Ticket' => $baseDir . '/app/Models/Ticket.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
