@@ -84,8 +84,9 @@ class TicketController extends Controller
         }
 
         return response()->json([
-            'message' => 'Ticket deleted successfully'
-        ]);
+            'success' => true,
+            'message' => 'Ticket deleted successfully.',
+        ], 200);
     }
 
     public function stats()
@@ -116,7 +117,7 @@ class TicketController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Dashboard statistics fetched successfully.',
-            'data' => $stats,
+            'data'    => $stats,
         ], 200);
     }
 
@@ -130,9 +131,10 @@ class TicketController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Ticket assigned successfully',
-            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-        ]);
+            'success' => true,
+            'message' => 'Ticket assigned successfully.',
+            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
+        ], 200);
     }
 
     // PUT /api/tickets/{id}/unassign
@@ -145,9 +147,10 @@ class TicketController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Ticket unassigned successfully',
-            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-        ]);
+            'success' => true,
+            'message' => 'Ticket unassigned successfully.',
+            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
+        ], 200);
     }
 
     // GET /api/tickets/assigned-to-me
@@ -158,10 +161,11 @@ class TicketController extends Controller
             ->get();
 
         return response()->json([
-            'message' => 'Assigned tickets fetched successfully',
+            'success' => true,
+            'message' => 'Assigned tickets fetched successfully.',
             'total'   => $tickets->count(),
-            'tickets' => $tickets,
-        ]);
+            'data'    => $tickets,
+        ], 200);
     }
 
     // PATCH /api/tickets/{id}/status
@@ -173,8 +177,9 @@ class TicketController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Ticket status updated successfully',
-            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-        ]);
+            'success' => true,
+            'message' => 'Ticket status updated successfully.',
+            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
+        ], 200);
     }
 }
