@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignTicketRequest;
+use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
@@ -72,7 +74,6 @@ class TicketController extends Controller
         $ticket = Ticket::findOrFail($id);
         $ticket->delete();
 
-        // Resequence ticket numbers
         $tickets = Ticket::orderBy('id')->get();
         $i = 1;
 
@@ -118,68 +119,62 @@ class TicketController extends Controller
             'data' => $stats,
         ], 200);
     }
-    // PUT /api/tickets/{id}/assign - Assign ticket to a user
-public function assign(Request $request, $id)
-{
-    $request->validate([
-        'assigned_to' => 'required|exists:users,id',
-    ]);
 
-    $ticket = Ticket::findOrFail($id);
-    $ticket->update([
-        'assigned_to' => $request->assigned_to,
-        'status'      => 'in_progress',
-    ]);
+    // PUT /api/tickets/{id}/assign
+    public function assign(AssignTicketRequest $request, $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $ticket->update([
+            'assigned_to' => $request->assigned_to,
+            'status'      => 'in_progress',
+        ]);
 
-    return response()->json([
-        'message' => 'Ticket assigned successfully',
-        'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-    ]);
-}
+        return response()->json([
+            'message' => 'Ticket assigned successfully',
+            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
+        ]);
+    }
 
-// PUT /api/tickets/{id}/unassign - Unassign ticket
-public function unassign($id)
-{
-    $ticket = Ticket::findOrFail($id);
-    $ticket->update([
-        'assigned_to' => null,
-        'status'      => 'open',
-    ]);
+    // PUT /api/tickets/{id}/unassign
+    public function unassign($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $ticket->update([
+            'assigned_to' => null,
+            'status'      => 'open',
+        ]);
 
-    return response()->json([
-        'message' => 'Ticket unassigned successfully',
-        'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-    ]);
-}
+        return response()->json([
+            'message' => 'Ticket unassigned successfully',
+            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
+        ]);
+    }
 
-// GET /api/tickets/assigned-to-me - Get tickets assigned to logged in user
-public function assignedToMe(Request $request)
-{
-    $tickets = Ticket::with(['user', 'assignedTo', 'department'])
-        ->where('assigned_to', $request->user()->id)
-        ->get();
+    // GET /api/tickets/assigned-to-me
+    public function assignedToMe(Request $request)
+    {
+        $tickets = Ticket::with(['user', 'assignedTo', 'department'])
+            ->where('assigned_to', $request->user()->id)
+            ->get();
 
-    return response()->json([
-        'message' => 'Assigned tickets fetched successfully',
-        'total'   => $tickets->count(),
-        'tickets' => $tickets,
-    ]);
-}
-// PATCH /api/tickets/{id}/status - Update ticket status only
-public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:open,in_progress,closed',
-    ]);
+        return response()->json([
+            'message' => 'Assigned tickets fetched successfully',
+            'total'   => $tickets->count(),
+            'tickets' => $tickets,
+        ]);
+    }
 
-    $ticket = Ticket::findOrFail($id);
-    $ticket->update([
-        'status' => $request->status,
-    ]);
+    // PATCH /api/tickets/{id}/status
+    public function updateStatus(UpdateTicketStatusRequest $request, $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $ticket->update([
+            'status' => $request->status,
+        ]);
 
-    return response()->json([
-        'message' => 'Ticket status updated successfully',
-        'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
-    ]);
-}
+        return response()->json([
+            'message' => 'Ticket status updated successfully',
+            'ticket'  => $ticket->load(['user', 'assignedTo', 'department']),
+        ]);
+    }
 }
