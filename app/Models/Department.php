@@ -9,10 +9,15 @@ class Department extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'head_id'];
 
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function head()
+    {
+        return $this->belongsTo(User::class, 'head_id');
     }
 }
