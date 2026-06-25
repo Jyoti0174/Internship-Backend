@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
@@ -20,11 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-    // Ticket Assignment — apiResource se PEHLE
+    // Ticket Assignment
     Route::get('/tickets/assigned-to-me', [TicketController::class, 'assignedToMe']);
     Route::put('/tickets/{id}/assign', [TicketController::class, 'assign']);
     Route::put('/tickets/{id}/unassign', [TicketController::class, 'unassign']);
-    Route::patch('/tickets/{id}/status', [TicketController::class, 'updateStatus']);
 
     // Tickets
     Route::apiResource('tickets', TicketController::class);
@@ -36,5 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     Route::get('/users/{id}/tickets', [UserController::class, 'tickets']);
+
+    // Departments
+    Route::get('/departments', [DepartmentController::class, 'index']);
+    Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::get('/departments/{id}', [DepartmentController::class, 'show']);
+    Route::put('/departments/{id}', [DepartmentController::class, 'update']);
+    Route::delete('/departments/{id}', [DepartmentController::class, 'destroy']);
 
 });
