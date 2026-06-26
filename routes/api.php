@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,5 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/departments/{id}', [DepartmentController::class, 'show']);
     Route::put('/departments/{id}', [DepartmentController::class, 'update']);
     Route::delete('/departments/{id}', [DepartmentController::class, 'destroy']);
+
+    // Comments
+Route::get('/tickets/{ticketId}/comments', [CommentController::class, 'index']);
+Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
+Route::put('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'update']);
+Route::delete('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'destroy']);
 
 });
