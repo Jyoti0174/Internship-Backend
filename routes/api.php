@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/assigned-to-me', [TicketController::class, 'assignedToMe']);
     Route::put('/tickets/{id}/assign', [TicketController::class, 'assign']);
     Route::put('/tickets/{id}/unassign', [TicketController::class, 'unassign']);
+    Route::patch('/tickets/{id}/status', [TicketController::class, 'updateStatus']);
 
     // Tickets
     Route::apiResource('tickets', TicketController::class);
