@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
@@ -51,5 +52,10 @@ Route::get('/tickets/{ticketId}/comments', [CommentController::class, 'index']);
 Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
 Route::put('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'update']);
 Route::delete('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'destroy']);
+
+Route::get('/tickets/{id}/attachments', [AttachmentController::class, 'index']);
+Route::post('/tickets/{id}/attachments', [AttachmentController::class, 'store']);
+Route::get('/attachments/{id}/download', [AttachmentController::class, 'download']);
+Route::delete('/tickets/{id}/attachments/{attachmentId}', [AttachmentController::class, 'destroy']);
 
 });
