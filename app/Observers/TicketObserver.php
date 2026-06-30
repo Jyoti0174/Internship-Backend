@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketObserver
 {
-    protected array $trackedFields = [
-        'status',
-        'priority',
-        'assigned_to',
-        'department_id',
-    ];
-
     public function created(Ticket $ticket): void
     {
         ActivityLog::record(
@@ -27,23 +20,25 @@ class TicketObserver
 
     public function updated(Ticket $ticket): void
     {
-        foreach ($this->trackedFields as $field) {
-            if ($ticket->isDirty($field)) {
-                $old = $ticket->getOriginal($field);
-                $new = $ticket->getAttribute($field);
+        $ignoredFields = ['updated_at', 'created_at'];
 
-                [$action, $description] = $this->buildLogMessage($field, $old, $new, $ticket);
+        $changedFields = array_diff(array_keys($ticket->getDirty()), $ignoredFields);
 
-                ActivityLog::record(
-                    $ticket->id,
-                    Auth::id(),
-                    $action,
-                    $description,
-                    $field,
-                    $old,
-                    $new
-                );
-            }
+        foreach ($changedFields as $field) {
+            $old = $ticket->getOriginal($field);
+            $new = $ticket->getAttribute($field);
+
+            [$action, $description] = $this->buildLogMessage($field, $old, $new, $ticket);
+
+            ActivityLog::record(
+                $ticket->id,
+                Auth::id(),
+                $action,
+                $description,
+                $field,
+                $old,
+                $new
+            );
         }
     }
 
