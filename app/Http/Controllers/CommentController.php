@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
@@ -48,6 +49,14 @@ class CommentController extends Controller
         ]);
 
         $comment->load('user:id,name,email');
+
+        // Log activity
+        ActivityLog::record(
+            $ticket->id,
+            $request->user()->id,
+            'comment_added',
+            $request->user()->name . ' added a comment.'
+        );
 
         return response()->json([
             'success' => true,

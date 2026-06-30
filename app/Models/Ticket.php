@@ -54,4 +54,8 @@ public function attachments()
 {
     return $this->hasMany(Attachment::class)->orderBy('created_at', 'asc');
 }
+public function activityLogs()
+{
+    return $this->hasMany(ActivityLog::class)->orderBy('created_at', 'desc');
+}
 }

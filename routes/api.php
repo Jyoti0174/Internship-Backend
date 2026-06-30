@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DepartmentController;
@@ -57,5 +58,8 @@ Route::get('/tickets/{id}/attachments', [AttachmentController::class, 'index']);
 Route::post('/tickets/{id}/attachments', [AttachmentController::class, 'store']);
 Route::get('/attachments/{id}/download', [AttachmentController::class, 'download']);
 Route::delete('/tickets/{id}/attachments/{attachmentId}', [AttachmentController::class, 'destroy']);
+
+    // Activity Logs
+    Route::get('/tickets/{id}/activity-logs', [ActivityLogController::class, 'index']);
 
 });

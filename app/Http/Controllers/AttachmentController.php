@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Models\Attachment;
 use App\Http\Requests\StoreAttachmentRequest;
@@ -56,6 +57,14 @@ class AttachmentController extends Controller
 
         $attachment->load('user:id,name,email');
 
+        // Log activity
+        ActivityLog::record(
+            $ticket->id,
+            $request->user()->id,
+            'attachment_added',
+            $request->user()->name . " uploaded an attachment: {$attachment->file_name}."
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Attachment uploaded successfully.',
@@ -65,26 +74,26 @@ class AttachmentController extends Controller
 
     // GET /api/tickets/{id}/attachments/{attachmentId}/download
     // GET /api/attachments/{id}/download
-public function download($id)
-{
-    $attachment = Attachment::find($id);
+    public function download($id)
+    {
+        $attachment = Attachment::find($id);
 
-    if (!$attachment) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Attachment not found.',
-        ], 404);
+        if (!$attachment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Attachment not found.',
+            ], 404);
+        }
+
+        if (!Storage::disk('public')->exists($attachment->file_path)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File not found on server.',
+            ], 404);
+        }
+
+        return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
     }
-
-    if (!Storage::disk('public')->exists($attachment->file_path)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'File not found on server.',
-        ], 404);
-    }
-
-    return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
-}
 
     // DELETE /api/tickets/{id}/attachments/{attachmentId}
     public function destroy(Request $request, $ticketId, $attachmentId)
