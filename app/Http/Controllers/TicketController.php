@@ -8,10 +8,13 @@ use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
+    use ApiResponse;
+
     public function index(Request $request)
     {
         $query = Ticket::with(['user', 'assignedTo', 'department']);
@@ -83,10 +86,7 @@ class TicketController extends Controller
                 ->update(['ticket_number' => $i++]);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Ticket deleted successfully.',
-        ], 200);
+        return $this->successResponse(null, 'Ticket deleted successfully.');
     }
 
     public function stats()
@@ -114,11 +114,7 @@ class TicketController extends Controller
             ],
         ];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Dashboard statistics fetched successfully.',
-            'data'    => $stats,
-        ], 200);
+        return $this->successResponse($stats, 'Dashboard statistics fetched successfully.');
     }
 
     // PUT /api/tickets/{id}/assign
@@ -130,11 +126,10 @@ class TicketController extends Controller
             'status'      => 'in_progress',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Ticket assigned successfully.',
-            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
-        ], 200);
+        return $this->successResponse(
+            $ticket->load(['user', 'assignedTo', 'department']),
+            'Ticket assigned successfully.'
+        );
     }
 
     // PUT /api/tickets/{id}/unassign
@@ -146,11 +141,10 @@ class TicketController extends Controller
             'status'      => 'open',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Ticket unassigned successfully.',
-            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
-        ], 200);
+        return $this->successResponse(
+            $ticket->load(['user', 'assignedTo', 'department']),
+            'Ticket unassigned successfully.'
+        );
     }
 
     // GET /api/tickets/assigned-to-me
@@ -160,12 +154,10 @@ class TicketController extends Controller
             ->where('assigned_to', $request->user()->id)
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Assigned tickets fetched successfully.',
-            'total'   => $tickets->count(),
-            'data'    => $tickets,
-        ], 200);
+        return $this->successResponse(
+            $tickets,
+            'Assigned tickets fetched successfully.'
+        );
     }
 
     // PATCH /api/tickets/{id}/status
@@ -176,10 +168,9 @@ class TicketController extends Controller
             'status' => $request->status,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Ticket status updated successfully.',
-            'data'    => $ticket->load(['user', 'assignedTo', 'department']),
-        ], 200);
+        return $this->successResponse(
+            $ticket->load(['user', 'assignedTo', 'department']),
+            'Ticket status updated successfully.'
+        );
     }
 }

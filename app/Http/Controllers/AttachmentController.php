@@ -6,30 +6,26 @@ use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Models\Attachment;
 use App\Http\Requests\StoreAttachmentRequest;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AttachmentController extends Controller
 {
+    use ApiResponse;
+
     // GET /api/tickets/{id}/attachments
     public function index($ticketId)
     {
         $ticket = Ticket::find($ticketId);
 
         if (!$ticket) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ticket not found.',
-            ], 404);
+            return $this->errorResponse('Ticket not found.', 404);
         }
 
         $attachments = $ticket->attachments()->with('user:id,name,email')->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Attachments fetched successfully.',
-            'data' => $attachments,
-        ], 200);
+        return $this->successResponse($attachments, 'Attachments fetched successfully.');
     }
 
     // POST /api/tickets/{id}/attachments
@@ -38,10 +34,7 @@ class AttachmentController extends Controller
         $ticket = Ticket::find($ticketId);
 
         if (!$ticket) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ticket not found.',
-            ], 404);
+            return $this->errorResponse('Ticket not found.', 404);
         }
 
         $file = $request->file('file');
@@ -57,7 +50,6 @@ class AttachmentController extends Controller
 
         $attachment->load('user:id,name,email');
 
-        // Log activity
         ActivityLog::record(
             $ticket->id,
             $request->user()->id,
@@ -65,31 +57,20 @@ class AttachmentController extends Controller
             $request->user()->name . " uploaded an attachment: {$attachment->file_name}."
         );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Attachment uploaded successfully.',
-            'data' => $attachment,
-        ], 201);
+        return $this->successResponse($attachment, 'Attachment uploaded successfully.', 201);
     }
 
-    // GET /api/tickets/{id}/attachments/{attachmentId}/download
     // GET /api/attachments/{id}/download
     public function download($id)
     {
         $attachment = Attachment::find($id);
 
         if (!$attachment) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Attachment not found.',
-            ], 404);
+            return $this->errorResponse('Attachment not found.', 404);
         }
 
         if (!Storage::disk('public')->exists($attachment->file_path)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'File not found on server.',
-            ], 404);
+            return $this->errorResponse('File not found on server.', 404);
         }
 
         return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
@@ -101,25 +82,16 @@ class AttachmentController extends Controller
         $attachment = Attachment::where('ticket_id', $ticketId)->find($attachmentId);
 
         if (!$attachment) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Attachment not found.',
-            ], 404);
+            return $this->errorResponse('Attachment not found.', 404);
         }
 
         if ($attachment->user_id !== $request->user()->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You are not authorized to delete this attachment.',
-            ], 403);
+            return $this->errorResponse('You are not authorized to delete this attachment.', 403);
         }
 
         Storage::disk('public')->delete($attachment->file_path);
         $attachment->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Attachment deleted successfully.',
-        ], 200);
+        return $this->successResponse(null, 'Attachment deleted successfully.');
     }
 }

@@ -42,18 +42,31 @@ class TicketResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
             'comments' => $this->whenLoaded('comments', function () {
-    return $this->comments->map(function ($comment) {
-        return [
-            'id'           => $comment->id,
-            'body'         => $comment->body,
-            'commented_by' => [
-                'id'   => $comment->user->id,
-                'name' => $comment->user->name,
-            ],
-            'created_at' => $comment->created_at?->toIso8601String(),
+                return $this->comments->map(function ($comment) {
+                    return [
+                        'id'           => $comment->id,
+                        'body'         => $comment->body,
+                        'commented_by' => [
+                            'id'   => $comment->user->id,
+                            'name' => $comment->user->name,
+                        ],
+                        'created_at' => $comment->created_at?->toIso8601String(),
+                    ];
+                });
+            }),
         ];
-    });
-}),
+    }
+
+    /**
+     * Add standardized metadata wrapper around the resource data.
+     */
+    public function with(Request $request): array
+    {
+        return [
+            'success'    => true,
+            'statusCode' => 200,
+            'message'    => 'Ticket fetched successfully.',
+            'timestamp'  => now()->toIso8601String(),
         ];
     }
 }
