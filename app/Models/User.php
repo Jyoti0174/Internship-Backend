@@ -33,10 +33,7 @@ class User extends Authenticatable
     return [
         'email_verified_at'      => 'datetime',
         'password'               => 'hashed',
-        'notify_ticket_created'  => 'boolean',
-        'notify_ticket_assigned' => 'boolean',
-        'notify_status_changed'  => 'boolean',
-        'notify_comment_added'   => 'boolean',
+        'email_notification' => 'array',
     ];
 }
 
