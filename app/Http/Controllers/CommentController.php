@@ -55,6 +55,12 @@ class CommentController extends Controller
         // Send email only if user has email notifications enabled
         if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
             Mail::to($ticket->user->email)->send(new CommentAddedMail($ticket, $comment));
+            ActivityLog::record(
+                $ticket->id,
+                $request->user()->id,
+                'email_sent',
+                'Email notification sent to ' . $ticket->user->email . ' for new comment.'
+            );
         }
 
         return $this->successResponse($comment, 'Comment added successfully.', 201);

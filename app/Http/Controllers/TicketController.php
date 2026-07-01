@@ -9,6 +9,7 @@ use App\Mail\CommentAddedMail;
 use App\Mail\TicketAssignedMail;
 use App\Mail\TicketCreatedMail;
 use App\Mail\TicketStatusChangedMail;
+use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -53,6 +54,12 @@ class TicketController extends Controller
         // Send email only if user has email notifications enabled
         if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
             Mail::to($ticket->user->email)->send(new TicketCreatedMail($ticket));
+            ActivityLog::record(
+                $ticket->id,
+                auth()->id(),
+                'email_sent',
+                'Email notification sent to ' . $ticket->user->email . ' for ticket creation.'
+            );
         }
 
         return (new TicketResource($ticket))->response()->setStatusCode(201);
@@ -139,6 +146,12 @@ class TicketController extends Controller
         // Send email only if assigned user has email notifications enabled
         if ($ticket->assignedTo && $ticket->assignedTo->email && $ticket->assignedTo->email_notifications) {
             Mail::to($ticket->assignedTo->email)->send(new TicketAssignedMail($ticket));
+            ActivityLog::record(
+                $ticket->id,
+                auth()->id(),
+                'email_sent',
+                'Email notification sent to ' . $ticket->assignedTo->email . ' for ticket assignment.'
+            );
         }
 
         return $this->successResponse(
@@ -191,6 +204,12 @@ class TicketController extends Controller
         // Send email only if user has email notifications enabled
         if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
             Mail::to($ticket->user->email)->send(new TicketStatusChangedMail($ticket, $oldStatus, $request->status));
+            ActivityLog::record(
+                $ticket->id,
+                auth()->id(),
+                'email_sent',
+                'Email notification sent to ' . $ticket->user->email . ' for status change.'
+            );
         }
 
         return $this->successResponse(
