@@ -83,40 +83,38 @@ class AuthController extends Controller
 public function getNotificationPreferences(Request $request)
 {
     $user = $request->user();
+    $prefs = $user->email_notifications ?? [];
+
     return response()->json([
         'data' => [
-            'ticket_created'  => (bool) $user->notify_ticket_created,
-            'ticket_assigned' => (bool) $user->notify_ticket_assigned,
-            'status_changed'  => (bool) $user->notify_status_changed,
-            'comment_added'   => (bool) $user->notify_comment_added,
+            'ticket_created'  => $prefs['ticket_created']  ?? false,
+            'ticket_assigned' => $prefs['ticket_assigned'] ?? false,
+            'status_changed'  => $prefs['status_changed']  ?? false,
+            'comment_added'   => $prefs['comment_added']   ?? false,
         ]
     ]);
 }
 
-// PUT /api/user/notification-preferences
 public function updateNotificationPreferences(Request $request)
 {
     $user = $request->user();
+
     $validated = $request->validate([
         'ticket_created'  => 'boolean',
         'ticket_assigned' => 'boolean',
         'status_changed'  => 'boolean',
         'comment_added'   => 'boolean',
     ]);
-    $user->update([
-        'notify_ticket_created'  => $validated['ticket_created']  ?? $user->notify_ticket_created,
-        'notify_ticket_assigned' => $validated['ticket_assigned'] ?? $user->notify_ticket_assigned,
-        'notify_status_changed'  => $validated['status_changed']  ?? $user->notify_status_changed,
-        'notify_comment_added'   => $validated['comment_added']   ?? $user->notify_comment_added,
-    ]);
+
+    $existing = $user->email_notifications ?? [];
+    $updated = array_merge($existing, $validated);
+
+    $user->email_notifications = $updated;
+    $user->save();
+
     return response()->json([
         'message' => 'Notification preferences updated successfully.',
-        'data' => [
-            'ticket_created'  => (bool) $user->notify_ticket_created,
-            'ticket_assigned' => (bool) $user->notify_ticket_assigned,
-            'status_changed'  => (bool) $user->notify_status_changed,
-            'comment_added'   => (bool) $user->notify_comment_added,
-        ]
+        'data'    => $updated
     ]);
 }
 }
