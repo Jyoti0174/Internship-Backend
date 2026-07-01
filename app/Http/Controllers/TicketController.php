@@ -2,20 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Requests\AssignTicketRequest;
 use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Http\Resources\TicketResource;
-use App\Mail\CommentAddedMail;
-use App\Mail\TicketAssignedMail;
-use App\Mail\TicketCreatedMail;
-use App\Mail\TicketStatusChangedMail;
 use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class TicketController extends Controller
 {
@@ -51,15 +47,13 @@ class TicketController extends Controller
         $ticket = Ticket::create($request->validated());
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email only if user has email notifications enabled
-        if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
-            Mail::to($ticket->user->email)->send(new TicketCreatedMail($ticket));
-            ActivityLog::record(
-                $ticket->id,
-                auth()->id(),
-                'email_sent',
-                'Email notification sent to ' . $ticket->user->email . ' for ticket creation.'
-            );
+        if ($ticket->user) {
+            NotificationHelper::sendIfEnabled($ticket->user, 'ticket_created', [
+                'title'      => $ticket->title,
+                'priority'   => $ticket->priority,
+                'status'     => $ticket->status,
+                'created_at' => $ticket->created_at,
+            ]);
         }
 
         return (new TicketResource($ticket))->response()->setStatusCode(201);
@@ -143,15 +137,12 @@ class TicketController extends Controller
 
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email only if assigned user has email notifications enabled
-        if ($ticket->assignedTo && $ticket->assignedTo->email && $ticket->assignedTo->email_notifications) {
-            Mail::to($ticket->assignedTo->email)->send(new TicketAssignedMail($ticket));
-            ActivityLog::record(
-                $ticket->id,
-                auth()->id(),
-                'email_sent',
-                'Email notification sent to ' . $ticket->assignedTo->email . ' for ticket assignment.'
-            );
+        if ($ticket->assignedTo) {
+            NotificationHelper::sendIfEnabled($ticket->assignedTo, 'ticket_assigned', [
+                'title'       => $ticket->title,
+                'priority'    => $ticket->priority,
+                'assigned_by' => auth()->user()->name,
+            ]);
         }
 
         return $this->successResponse(
@@ -201,15 +192,12 @@ class TicketController extends Controller
 
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email only if user has email notifications enabled
-        if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
-            Mail::to($ticket->user->email)->send(new TicketStatusChangedMail($ticket, $oldStatus, $request->status));
-            ActivityLog::record(
-                $ticket->id,
-                auth()->id(),
-                'email_sent',
-                'Email notification sent to ' . $ticket->user->email . ' for status change.'
-            );
+        if ($ticket->user) {
+            NotificationHelper::sendIfEnabled($ticket->user, 'status_changed', [
+                'title'      => $ticket->title,
+                'old_status' => $oldStatus,
+                'new_status' => $request->status,
+            ]);
         }
 
         return $this->successResponse(

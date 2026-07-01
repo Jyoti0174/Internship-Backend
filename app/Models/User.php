@@ -17,10 +17,7 @@ class User extends Authenticatable
         'department_id',
         'role',
         'email_notifications',
-        'notify_ticket_created',
-        'notify_ticket_assigned',
-        'notify_status_changed',
-        'notify_comment_added',
+        'notification_preferences',
     ];
 
     protected $hidden = [
@@ -29,21 +26,20 @@ class User extends Authenticatable
     ];
 
     protected function casts(): array
-{
-    return [
-        'email_verified_at'      => 'datetime',
-        'password'               => 'hashed',
-        'email_notification' => 'array',
-    ];
-}
+    {
+        return [
+            'email_verified_at'   => 'datetime',
+            'password'            => 'hashed',
+            'email_notifications' => 'boolean',  
+             'notification_preferences' => 'array',  
+        ];
+    }
 
-    // User belongs to Department
     public function department()
     {
         return $this->belongsTo(Department::class);
     }
 
-    // User has many Tickets
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

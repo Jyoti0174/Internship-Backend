@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\CommentAddedMail;
+use App\Helpers\NotificationHelper;
 use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
@@ -52,15 +51,13 @@ class CommentController extends Controller
             $request->user()->name . ' added a comment.'
         );
 
-        // Send email only if user has email notifications enabled
-        if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
-            Mail::to($ticket->user->email)->send(new CommentAddedMail($ticket, $comment));
-            ActivityLog::record(
-                $ticket->id,
-                $request->user()->id,
-                'email_sent',
-                'Email notification sent to ' . $ticket->user->email . ' for new comment.'
-            );
+        // Send email notification if enabled
+        if ($ticket->user) {
+            NotificationHelper::sendIfEnabled($ticket->user, 'comment_added', [
+                'title'      => $ticket->title,
+                'comment_by' => $request->user()->name,
+                'comment'    => $request->body,
+            ]);
         }
 
         return $this->successResponse($comment, 'Comment added successfully.', 201);

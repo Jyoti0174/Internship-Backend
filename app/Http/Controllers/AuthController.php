@@ -83,7 +83,7 @@ class AuthController extends Controller
 public function getNotificationPreferences(Request $request)
 {
     $user = $request->user();
-    $prefs = $user->email_notifications ?? [];
+    $prefs = $user->notification_preferences ?? [];
 
     return response()->json([
         'data' => [
@@ -106,10 +106,10 @@ public function updateNotificationPreferences(Request $request)
         'comment_added'   => 'boolean',
     ]);
 
-    $existing = $user->email_notifications ?? [];
+    $existing = $user->notification_preferences ?? [];
     $updated = array_merge($existing, $validated);
 
-    $user->email_notifications = $updated;
+    $user->notification_preferences = $updated;
     $user->save();
 
     return response()->json([
