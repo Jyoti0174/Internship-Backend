@@ -61,6 +61,7 @@ class UserController extends Controller
             'password'      => 'sometimes|string|min:8',
             'role'          => 'sometimes|in:admin,agent,employee,manager',
             'department_id' => 'sometimes|nullable|exists:departments,id',
+            'email_notifications' => 'sometimes|boolean',
         ]);
 
         if ($request->has('password')) {
@@ -68,7 +69,7 @@ class UserController extends Controller
         }
 
         $user->update($request->only([
-            'name', 'email', 'password', 'role', 'department_id'
+    'name', 'email', 'password', 'role', 'department_id', 'email_notifications'
         ]));
 
         return $this->successResponse(

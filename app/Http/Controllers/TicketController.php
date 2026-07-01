@@ -50,8 +50,8 @@ class TicketController extends Controller
         $ticket = Ticket::create($request->validated());
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email to ticket creator
-        if ($ticket->user && $ticket->user->email) {
+        // Send email only if user has email notifications enabled
+        if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
             Mail::to($ticket->user->email)->send(new TicketCreatedMail($ticket));
         }
 
@@ -136,8 +136,8 @@ class TicketController extends Controller
 
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email to assigned user
-        if ($ticket->assignedTo && $ticket->assignedTo->email) {
+        // Send email only if assigned user has email notifications enabled
+        if ($ticket->assignedTo && $ticket->assignedTo->email && $ticket->assignedTo->email_notifications) {
             Mail::to($ticket->assignedTo->email)->send(new TicketAssignedMail($ticket));
         }
 
@@ -188,8 +188,8 @@ class TicketController extends Controller
 
         $ticket->load(['user', 'assignedTo', 'department']);
 
-        // Send email to ticket creator
-        if ($ticket->user && $ticket->user->email) {
+        // Send email only if user has email notifications enabled
+        if ($ticket->user && $ticket->user->email && $ticket->user->email_notifications) {
             Mail::to($ticket->user->email)->send(new TicketStatusChangedMail($ticket, $oldStatus, $request->status));
         }
 
