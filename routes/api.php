@@ -61,5 +61,8 @@ Route::delete('/tickets/{id}/attachments/{attachmentId}', [AttachmentController:
 
     // Activity Logs
     Route::get('/tickets/{id}/activity-logs', [ActivityLogController::class, 'index']);
+    // Notification Preferences
+Route::get('/user/notification-preferences', [AuthController::class, 'getNotificationPreferences']);
+Route::put('/user/notification-preferences', [AuthController::class, 'updateNotificationPreferences']);
 
 });

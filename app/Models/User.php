@@ -16,7 +16,11 @@ class User extends Authenticatable
         'password',
         'department_id',
         'role',
-         'email_notifications',
+        'email_notifications',
+        'notify_ticket_created',
+        'notify_ticket_assigned',
+        'notify_status_changed',
+        'notify_comment_added',
     ];
 
     protected $hidden = [
@@ -25,12 +29,16 @@ class User extends Authenticatable
     ];
 
     protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+{
+    return [
+        'email_verified_at'      => 'datetime',
+        'password'               => 'hashed',
+        'notify_ticket_created'  => 'boolean',
+        'notify_ticket_assigned' => 'boolean',
+        'notify_status_changed'  => 'boolean',
+        'notify_comment_added'   => 'boolean',
+    ];
+}
 
     // User belongs to Department
     public function department()
