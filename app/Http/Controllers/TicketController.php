@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AssignTicketRequest;
 use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Http\Resources\TicketResource;
+use App\Mail\CommentAddedMail;
+use App\Mail\TicketAssignedMail;
+use App\Mail\TicketCreatedMail;
+use App\Mail\TicketStatusChangedMail;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class TicketController extends Controller
 {
@@ -43,10 +48,14 @@ class TicketController extends Controller
     public function store(StoreTicketRequest $request)
     {
         $ticket = Ticket::create($request->validated());
+        $ticket->load(['user', 'assignedTo', 'department']);
 
-        return (new TicketResource(
-            $ticket->load(['user', 'assignedTo', 'department'])
-        ))->response()->setStatusCode(201);
+        // Send email to ticket creator
+        if ($ticket->user && $ticket->user->email) {
+            Mail::to($ticket->user->email)->send(new TicketCreatedMail($ticket));
+        }
+
+        return (new TicketResource($ticket))->response()->setStatusCode(201);
     }
 
     public function show($id)
@@ -64,7 +73,6 @@ class TicketController extends Controller
     public function update(UpdateTicketRequest $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
-
         $ticket->update($request->validated());
 
         return new TicketResource(
@@ -126,8 +134,15 @@ class TicketController extends Controller
             'status'      => 'in_progress',
         ]);
 
+        $ticket->load(['user', 'assignedTo', 'department']);
+
+        // Send email to assigned user
+        if ($ticket->assignedTo && $ticket->assignedTo->email) {
+            Mail::to($ticket->assignedTo->email)->send(new TicketAssignedMail($ticket));
+        }
+
         return $this->successResponse(
-            $ticket->load(['user', 'assignedTo', 'department']),
+            $ticket,
             'Ticket assigned successfully.'
         );
     }
@@ -164,12 +179,22 @@ class TicketController extends Controller
     public function updateStatus(UpdateTicketStatusRequest $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
+
+        $oldStatus = $ticket->status;
+
         $ticket->update([
             'status' => $request->status,
         ]);
 
+        $ticket->load(['user', 'assignedTo', 'department']);
+
+        // Send email to ticket creator
+        if ($ticket->user && $ticket->user->email) {
+            Mail::to($ticket->user->email)->send(new TicketStatusChangedMail($ticket, $oldStatus, $request->status));
+        }
+
         return $this->successResponse(
-            $ticket->load(['user', 'assignedTo', 'department']),
+            $ticket,
             'Ticket status updated successfully.'
         );
     }

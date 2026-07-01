@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CommentAddedMail;
 use App\Models\ActivityLog;
 use App\Models\Ticket;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
@@ -38,7 +40,7 @@ class CommentController extends Controller
 
         $comment = $ticket->comments()->create([
             'user_id' => $request->user()->id,
-            'body' => $request->body,
+            'body'    => $request->body,
         ]);
 
         $comment->load('user:id,name,email');
@@ -49,6 +51,11 @@ class CommentController extends Controller
             'comment_added',
             $request->user()->name . ' added a comment.'
         );
+
+        // Send email to ticket creator
+        if ($ticket->user && $ticket->user->email) {
+            Mail::to($ticket->user->email)->send(new CommentAddedMail($ticket, $comment));
+        }
 
         return $this->successResponse($comment, 'Comment added successfully.', 201);
     }
