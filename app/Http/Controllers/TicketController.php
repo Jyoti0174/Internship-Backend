@@ -59,7 +59,7 @@ class TicketController extends Controller
         return (new TicketResource($ticket))->response()->setStatusCode(201);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $ticket = Ticket::with([
             'user',
@@ -68,12 +68,36 @@ class TicketController extends Controller
             'comments.user'
         ])->findOrFail($id);
 
+        // Employee sirf apna ticket dekh sakta hai
+        if ($request->user()->role === 'employee') {
+            if (
+                $ticket->user_id !== $request->user()->id &&
+                $ticket->assigned_to !== $request->user()->id
+            ) {
+                return $this->errorResponse(
+                    'Access denied. You can only view your own tickets.',
+                    403
+                );
+            }
+        }
+
         return new TicketResource($ticket);
     }
 
     public function update(UpdateTicketRequest $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
+
+        // Employee apna ticket update kar sakta hai
+        if ($request->user()->role === 'employee') {
+            if ($ticket->user_id !== $request->user()->id) {
+                return $this->errorResponse(
+                    'Access denied. You can only update your own tickets.',
+                    403
+                );
+            }
+        }
+
         $ticket->update($request->validated());
 
         return new TicketResource(
@@ -81,9 +105,20 @@ class TicketController extends Controller
         );
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
+
+        // Employee apna ticket delete kar sakta hai
+        if ($request->user()->role === 'employee') {
+            if ($ticket->user_id !== $request->user()->id) {
+                return $this->errorResponse(
+                    'Access denied. You can only delete your own tickets.',
+                    403
+                );
+            }
+        }
+
         $ticket->delete();
 
         $tickets = Ticket::orderBy('id')->get();
@@ -169,9 +204,21 @@ class TicketController extends Controller
     // GET /api/tickets/assigned-to-me
     public function assignedToMe(Request $request)
     {
-        $tickets = Ticket::with(['user', 'assignedTo', 'department'])
-            ->where('assigned_to', $request->user()->id)
-            ->get();
+        $user = $request->user();
+
+        // Employee sirf apne assigned tickets dekhe
+        if ($user->role === 'employee') {
+            $tickets = Ticket::with(['user', 'assignedTo', 'department'])
+                ->where(function ($query) use ($user) {
+                    $query->where('assigned_to', $user->id)
+                          ->orWhere('user_id', $user->id);
+                })
+                ->get();
+        } else {
+            $tickets = Ticket::with(['user', 'assignedTo', 'department'])
+                ->where('assigned_to', $user->id)
+                ->get();
+        }
 
         return $this->successResponse(
             $tickets,
@@ -183,6 +230,19 @@ class TicketController extends Controller
     public function updateStatus(UpdateTicketStatusRequest $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
+
+        // Employee sirf apne ticket ka status update kar sakta hai
+        if ($request->user()->role === 'employee') {
+            if (
+                $ticket->user_id !== $request->user()->id &&
+                $ticket->assigned_to !== $request->user()->id
+            ) {
+                return $this->errorResponse(
+                    'Access denied. You can only update status of your own tickets.',
+                    403
+                );
+            }
+        }
 
         $oldStatus = $ticket->status;
 
