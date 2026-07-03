@@ -16,34 +16,31 @@ Route::post('/login', [AuthController::class, 'login']);
 // Protected routes - Sanctum middleware
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Auth — sab access kar sakte hain
+    // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-    // Profile — sab roles apna profile dekh aur update kar sakte hain
+    // Profile
     Route::get('/profile', [AuthController::class, 'me']);
     Route::put('/profile', [UserController::class, 'updateProfile']);
 
-    // Notification Preferences — sab access kar sakte hain
+    // Notification Preferences
     Route::get('/user/notification-preferences', [AuthController::class, 'getNotificationPreferences']);
     Route::put('/user/notification-preferences', [AuthController::class, 'updateNotificationPreferences']);
 
     // Sab roles — apne assigned tickets
     Route::get('/tickets/assigned-to-me', [TicketController::class, 'assignedToMe']);
 
-    // Single ticket view — sab roles (controller mein employee check hoga)
-    Route::get('/tickets/{id}', [TicketController::class, 'show']);
-
-    // Status update — sab kar sakte hain (controller mein employee check hoga)
+    // Status update
     Route::patch('/tickets/{id}/status', [TicketController::class, 'updateStatus']);
 
-    // Comments — sab access kar sakte hain
+    // Comments
     Route::get('/tickets/{ticketId}/comments', [CommentController::class, 'index']);
     Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
     Route::put('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'update']);
     Route::delete('/tickets/{ticketId}/comments/{commentId}', [CommentController::class, 'destroy']);
 
-    // Attachments — sab access kar sakte hain
+    // Attachments
     Route::get('/tickets/{id}/attachments', [AttachmentController::class, 'index']);
     Route::post('/tickets/{id}/attachments', [AttachmentController::class, 'store']);
     Route::get('/attachments/{id}/download', [AttachmentController::class, 'download']);
@@ -52,8 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin + Manager only
     Route::middleware('role:admin,manager')->group(function () {
 
-        // Dashboard stats
+        // Dashboard stats — specific routes PEHLE {id} se
         Route::get('/tickets/stats', [TicketController::class, 'stats']);
+        Route::get('/tickets/stats/by-department', [TicketController::class, 'statsByDepartment']);
+        Route::get('/tickets/recent', [TicketController::class, 'recentTickets']);
 
         // Tickets — full CRUD
         Route::get('/tickets', [TicketController::class, 'index']);
@@ -68,6 +67,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Activity Logs
         Route::get('/tickets/{id}/activity-logs', [ActivityLogController::class, 'index']);
     });
+
+    // Single ticket view — BAAD MEIN (admin+manager group ke baad)
+    Route::get('/tickets/{id}', [TicketController::class, 'show']);
 
     // Admin only
     Route::middleware('role:admin')->group(function () {

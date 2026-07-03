@@ -68,7 +68,6 @@ class TicketController extends Controller
             'comments.user'
         ])->findOrFail($id);
 
-        // Employee sirf apna ticket dekh sakta hai
         if ($request->user()->role === 'employee') {
             if (
                 $ticket->user_id !== $request->user()->id &&
@@ -88,7 +87,6 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        // Employee apna ticket update kar sakta hai
         if ($request->user()->role === 'employee') {
             if ($ticket->user_id !== $request->user()->id) {
                 return $this->errorResponse(
@@ -109,7 +107,6 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        // Employee apna ticket delete kar sakta hai
         if ($request->user()->role === 'employee') {
             if ($ticket->user_id !== $request->user()->id) {
                 return $this->errorResponse(
@@ -161,6 +158,39 @@ class TicketController extends Controller
         return $this->successResponse($stats, 'Dashboard statistics fetched successfully.');
     }
 
+    // GET /api/tickets/stats/by-department
+    public function statsByDepartment()
+    {
+        $data = Ticket::with('department')
+            ->selectRaw('department_id, COUNT(*) as count')
+            ->whereNotNull('department_id')
+            ->groupBy('department_id')
+            ->get()
+            ->map(function ($ticket) {
+                return [
+                    'department' => $ticket->department->name ?? 'Unknown',
+                    'count'      => $ticket->count,
+                ];
+            });
+
+        return $this->successResponse($data, 'Tickets by department fetched successfully.');
+    }
+
+    // GET /api/tickets/recent
+    public function recentTickets()
+    {
+        $tickets = Ticket::with([
+            'user:id,name,email',
+            'assignedTo:id,name',
+            'department:id,name',
+        ])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get(['id', 'ticket_number', 'title', 'status', 'priority', 'user_id', 'assigned_to', 'department_id', 'created_at']);
+
+        return $this->successResponse($tickets, 'Recent tickets fetched successfully.');
+    }
+
     // PUT /api/tickets/{id}/assign
     public function assign(AssignTicketRequest $request, $id)
     {
@@ -206,7 +236,6 @@ class TicketController extends Controller
     {
         $user = $request->user();
 
-        // Employee sirf apne assigned tickets dekhe
         if ($user->role === 'employee') {
             $tickets = Ticket::with(['user', 'assignedTo', 'department'])
                 ->where(function ($query) use ($user) {
@@ -231,7 +260,6 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        // Employee sirf apne ticket ka status update kar sakta hai
         if ($request->user()->role === 'employee') {
             if (
                 $ticket->user_id !== $request->user()->id &&
