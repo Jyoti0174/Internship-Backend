@@ -20,4 +20,9 @@ class Department extends Model
     {
         return $this->belongsTo(User::class, 'head_id');
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

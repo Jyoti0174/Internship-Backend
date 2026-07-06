@@ -10,14 +10,15 @@ class DepartmentController extends Controller
     public function index()
     {
         $departments = Department::with('head')
-            ->withCount('users')
+            ->withCount(['users', 'tickets'])
             ->get()
             ->map(function ($dept) {
                 return [
-                    'id'             => $dept->id,
-                    'name'           => $dept->name,
-                    'description'    => $dept->description,
-                    'employee_count' => $dept->users_count,
+                    'id'              => $dept->id,
+                    'name'            => $dept->name,
+                    'description'     => $dept->description,
+                    'employee_count'  => $dept->users_count,
+                    'tickets_count'   => $dept->tickets_count,
                     'department_head' => $dept->head ? [
                         'id'   => $dept->head->id,
                         'name' => $dept->head->name,
