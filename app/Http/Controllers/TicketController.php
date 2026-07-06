@@ -154,15 +154,17 @@ class TicketController extends Controller
     // GET /api/tickets/stats/by-department
     public function statsByDepartment()
     {
-        $data = Ticket::with('department')
-            ->selectRaw('department_id, COUNT(*) as count')
-            ->whereNotNull('department_id')
-            ->groupBy('department_id')
+        $data = \DB::table('tickets')
+            ->join('departments', 'tickets.department_id', '=', 'departments.id')
+            ->select('departments.name', \DB::raw('COUNT(tickets.id) as count'))
+            ->whereNull('tickets.deleted_at')
+            ->groupBy('departments.id', 'departments.name')
+            ->orderBy('count', 'desc')
             ->get()
-            ->map(function ($ticket) {
+            ->map(function ($item) {
                 return [
-                    'department' => $ticket->department->name ?? 'Unknown',
-                    'count'      => $ticket->count,
+                    'department' => $item->name,
+                    'count'      => $item->count,
                 ];
             });
 
