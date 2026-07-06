@@ -132,27 +132,20 @@ class TicketController extends Controller
 
     public function stats()
     {
+        $byDepartment = \DB::table('tickets')
+            ->join('departments', 'tickets.department_id', '=', 'departments.id')
+            ->select('departments.name', \DB::raw('COUNT(tickets.id) as count'))
+            ->whereNull('tickets.deleted_at')
+            ->groupBy('departments.id', 'departments.name')
+            ->orderBy('count', 'desc')
+            ->get();
+
         $stats = [
-            'total_tickets' => [
-                'label' => 'Total Tickets',
-                'count' => Ticket::count(),
-            ],
-            'open_tickets' => [
-                'label' => 'Open Tickets',
-                'count' => Ticket::where('status', 'open')->count(),
-            ],
-            'in_progress_tickets' => [
-                'label' => 'In Progress Tickets',
-                'count' => Ticket::where('status', 'in_progress')->count(),
-            ],
-            'closed_tickets' => [
-                'label' => 'Closed Tickets',
-                'count' => Ticket::where('status', 'closed')->count(),
-            ],
-            'high_priority_tickets' => [
-                'label' => 'High Priority Tickets',
-                'count' => Ticket::where('priority', 'high')->count(),
-            ],
+            'total'         => Ticket::count(),
+            'open'          => Ticket::where('status', 'open')->count(),
+            'in_progress'   => Ticket::where('status', 'in_progress')->count(),
+            'closed'        => Ticket::where('status', 'closed')->count(),
+            'by_department' => $byDepartment,
         ];
 
         return $this->successResponse($stats, 'Dashboard statistics fetched successfully.');
