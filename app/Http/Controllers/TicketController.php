@@ -170,18 +170,30 @@ class TicketController extends Controller
     }
 
     // GET /api/tickets/recent
-    public function recentTickets()
+    public function recentTickets(Request $request)
     {
+        $perPage = $request->get('per_page', 5);
+        $perPage = in_array($perPage, [5, 10, 15, 20]) ? $perPage : 5;
+
         $tickets = Ticket::with([
             'user:id,name,email',
             'assignedTo:id,name',
             'department:id,name',
         ])
             ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get(['id', 'ticket_number', 'title', 'status', 'priority', 'user_id', 'assigned_to', 'department_id', 'created_at']);
+            ->paginate($perPage, ['id', 'ticket_number', 'title', 'status', 'priority', 'user_id', 'assigned_to', 'department_id', 'created_at']);
 
-        return $this->successResponse($tickets, 'Recent tickets fetched successfully.');
+        return response()->json([
+            'success'      => true,
+            'statusCode'   => 200,
+            'message'      => 'Recent tickets fetched successfully.',
+            'data'         => $tickets->items(),
+            'current_page' => $tickets->currentPage(),
+            'per_page'     => $tickets->perPage(),
+            'total'        => $tickets->total(),
+            'last_page'    => $tickets->lastPage(),
+            'timestamp'    => now()->toIso8601String(),
+        ]);
     }
 
     // PUT /api/tickets/{id}/assign
