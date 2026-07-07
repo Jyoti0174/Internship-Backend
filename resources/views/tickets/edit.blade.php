@@ -36,6 +36,15 @@
             </option>
         @endforeach
     </select><br><br>
+    Department:
+    <select name="department_id">
+        <option value="">-- None --</option>
+        @foreach($departments as $department)
+            <option value="{{ $department->id }}" {{ $ticket->department_id == $department->id ? 'selected' : '' }}>
+                {{ $department->name }}
+            </option>
+        @endforeach
+    </select><br><br>
     <button type="submit">Update Ticket</button>
 </form>
 </body>

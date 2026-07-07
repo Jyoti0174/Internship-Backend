@@ -34,6 +34,13 @@
             <option value="{{ $user->id }}">{{ $user->name }}</option>
         @endforeach
     </select><br><br>
+    Department:
+    <select name="department_id">
+        <option value="">-- None --</option>
+        @foreach($departments as $department)
+            <option value="{{ $department->id }}">{{ $department->name }}</option>
+        @endforeach
+    </select><br><br>
     <button type="submit">Create Ticket</button>
 </form>
 </body>
