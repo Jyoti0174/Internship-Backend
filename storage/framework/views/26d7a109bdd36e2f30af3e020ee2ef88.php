@@ -28,21 +28,21 @@
         <option value="medium" <?php echo e($ticket->priority == 'medium' ? 'selected' : ''); ?>>Medium</option>
         <option value="high" <?php echo e($ticket->priority == 'high' ? 'selected' : ''); ?>>High</option>
     </select><br><br>
-    User:
-    <select name="user_id">
-        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <option value="<?php echo e($user->id); ?>" <?php echo e($ticket->user_id == $user->id ? 'selected' : ''); ?>>
-                <?php echo e($user->name); ?>
-
-            </option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </select><br><br>
     Department:
     <select name="department_id">
         <option value="">-- None --</option>
         <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $department): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <option value="<?php echo e($department->id); ?>" <?php echo e($ticket->department_id == $department->id ? 'selected' : ''); ?>>
                 <?php echo e($department->name); ?>
+
+            </option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select><br><br>
+    User:
+    <select name="user_id">
+        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($user->id); ?>" <?php echo e($ticket->user_id == $user->id ? 'selected' : ''); ?>>
+                <?php echo e($user->name); ?>
 
             </option>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

@@ -28,20 +28,20 @@
         <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>Medium</option>
         <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>High</option>
     </select><br><br>
-    User:
-    <select name="user_id">
-        @foreach($users as $user)
-            <option value="{{ $user->id }}" {{ $ticket->user_id == $user->id ? 'selected' : '' }}>
-                {{ $user->name }}
-            </option>
-        @endforeach
-    </select><br><br>
     Department:
     <select name="department_id">
         <option value="">-- None --</option>
         @foreach($departments as $department)
             <option value="{{ $department->id }}" {{ $ticket->department_id == $department->id ? 'selected' : '' }}>
                 {{ $department->name }}
+            </option>
+        @endforeach
+    </select><br><br>
+    User:
+    <select name="user_id">
+        @foreach($users as $user)
+            <option value="{{ $user->id }}" {{ $ticket->user_id == $user->id ? 'selected' : '' }}>
+                {{ $user->name }}
             </option>
         @endforeach
     </select><br><br>

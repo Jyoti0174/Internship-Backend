@@ -28,17 +28,17 @@
         <option value="medium">Medium</option>
         <option value="high">High</option>
     </select><br><br>
-    User:
-    <select name="user_id">
-        @foreach($users as $user)
-            <option value="{{ $user->id }}">{{ $user->name }}</option>
-        @endforeach
-    </select><br><br>
     Department:
     <select name="department_id">
         <option value="">-- None --</option>
         @foreach($departments as $department)
             <option value="{{ $department->id }}">{{ $department->name }}</option>
+        @endforeach
+    </select><br><br>
+    User:
+    <select name="user_id">
+        @foreach($users as $user)
+            <option value="{{ $user->id }}">{{ $user->name }}</option>
         @endforeach
     </select><br><br>
     <button type="submit">Create Ticket</button>
