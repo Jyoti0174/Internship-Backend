@@ -29,15 +29,32 @@ class TicketController extends Controller
             $query->where('priority', $request->priority);
         }
 
+        // Department filter (for dropdown)
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        // Keyword search (title + description)
+        if ($request->filled('search')) {
+            $keyword = $request->search;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
         $sortField = $request->get('sort', 'created_at');
-
         $allowedSorts = ['title', 'priority', 'created_at'];
-
         if (!in_array($sortField, $allowedSorts)) {
             $sortField = 'created_at';
         }
 
-        $tickets = $query->orderBy($sortField, 'asc')->paginate(10);
+        $sortDirection = $request->get('direction', 'asc');
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $tickets = $query->orderBy($sortField, $sortDirection)->paginate(10);
 
         return TicketResource::collection($tickets);
     }

@@ -54,6 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tickets/stats/by-department', [TicketController::class, 'statsByDepartment']);
         Route::get('/tickets/recent', [TicketController::class, 'recentTickets']);
 
+        // Departments list — dropdown ke liye (admin + manager dono)
+        Route::get('/departments', [DepartmentController::class, 'index']);
+
         // Tickets — full CRUD
         Route::get('/tickets', [TicketController::class, 'index']);
         Route::post('/tickets', [TicketController::class, 'store']);
@@ -82,8 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
         Route::get('/users/{id}/tickets', [UserController::class, 'tickets']);
 
-        // Departments
-        Route::get('/departments', [DepartmentController::class, 'index']);
+        // Departments (create/update/delete — admin only)
         Route::post('/departments', [DepartmentController::class, 'store']);
         Route::get('/departments/{id}', [DepartmentController::class, 'show']);
         Route::put('/departments/{id}', [DepartmentController::class, 'update']);
