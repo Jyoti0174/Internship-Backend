@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AuthController;
@@ -56,6 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Departments list — dropdown ke liye (admin + manager dono)
         Route::get('/departments', [DepartmentController::class, 'index']);
+
+        // Reports
+        Route::get('/reports', [ReportController::class, 'index']);
+        Route::get('/reports/export', [ReportController::class, 'export']);
 
         // Tickets — full CRUD
         Route::get('/tickets', [TicketController::class, 'index']);
