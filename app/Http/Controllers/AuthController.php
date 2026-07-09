@@ -77,44 +77,59 @@ class AuthController extends Controller
     // Get current user
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user()->load('department:id,name');
+
+        return response()->json([
+            'id'                       => $user->id,
+            'name'                     => $user->name,
+            'email'                    => $user->email,
+            'role'                     => $user->role,
+            'department_id'            => $user->department_id,
+            'department'               => $user->department ? [
+                'id'   => $user->department->id,
+                'name' => $user->department->name,
+            ] : null,
+            'email_notifications'      => $user->email_notifications,
+            'notification_preferences' => $user->notification_preferences,
+        ]);
     }
+
     // GET /api/user/notification-preferences
-public function getNotificationPreferences(Request $request)
-{
-    $user = $request->user();
-    $prefs = $user->notification_preferences ?? [];
+    public function getNotificationPreferences(Request $request)
+    {
+        $user = $request->user();
+        $prefs = $user->notification_preferences ?? [];
 
-    return response()->json([
-        'data' => [
-            'ticket_created'  => $prefs['ticket_created']  ?? false,
-            'ticket_assigned' => $prefs['ticket_assigned'] ?? false,
-            'status_changed'  => $prefs['status_changed']  ?? false,
-            'comment_added'   => $prefs['comment_added']   ?? false,
-        ]
-    ]);
-}
+        return response()->json([
+            'data' => [
+                'ticket_created'  => $prefs['ticket_created']  ?? false,
+                'ticket_assigned' => $prefs['ticket_assigned'] ?? false,
+                'status_changed'  => $prefs['status_changed']  ?? false,
+                'comment_added'   => $prefs['comment_added']   ?? false,
+            ]
+        ]);
+    }
 
-public function updateNotificationPreferences(Request $request)
-{
-    $user = $request->user();
+    public function updateNotificationPreferences(Request $request)
+    {
+        $user = $request->user();
 
-    $validated = $request->validate([
-        'ticket_created'  => 'boolean',
-        'ticket_assigned' => 'boolean',
-        'status_changed'  => 'boolean',
-        'comment_added'   => 'boolean',
-    ]);
+        $validated = $request->validate([
+            'ticket_created'  => 'boolean',
+            'ticket_assigned' => 'boolean',
+            'status_changed'  => 'boolean',
+            'comment_added'   => 'boolean',
+        ]);
 
-    $existing = $user->notification_preferences ?? [];
-    $updated = array_merge($existing, $validated);
+        $existing = $user->notification_preferences ?? [];
+        $updated = array_merge($existing, $validated);
 
-    $user->notification_preferences = $updated;
-    $user->save();
+        $user->notification_preferences = $updated;
+        $user->save();
 
-    return response()->json([
-        'message' => 'Notification preferences updated successfully.',
-        'data'    => $updated
-    ]);
-}
+        return response()->json([
+            'message' => 'Notification preferences updated successfully.',
+            'data'    => $updated
+        ]);
+    }
 }
