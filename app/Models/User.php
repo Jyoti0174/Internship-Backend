@@ -18,6 +18,7 @@ class User extends Authenticatable
         'role',
         'email_notifications',
         'notification_preferences',
+        'profile_photo',            // ← add kiya
     ];
 
     protected $hidden = [
@@ -28,10 +29,10 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at'   => 'datetime',
-            'password'            => 'hashed',
-            'email_notifications' => 'boolean',  
-             'notification_preferences' => 'array',  
+            'email_verified_at'        => 'datetime',
+            'password'                 => 'hashed',
+            'email_notifications'      => 'boolean',
+            'notification_preferences' => 'array',
         ];
     }
 

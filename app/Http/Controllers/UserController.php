@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -136,6 +137,81 @@ class UserController extends Controller
             $user->fresh('department'),
             'Profile updated successfully.'
         );
+    }
+
+    // PUT /api/profile/password - Change password
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password'          => 'required|string',
+            'new_password'              => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*?&#]/',
+            ],
+            'new_password_confirmation' => 'required|string',
+        ], [
+            'current_password.required'          => 'Current password is required.',
+            'new_password.required'              => 'New password is required.',
+            'new_password.min'                   => 'New password must be at least 8 characters.',
+            'new_password.confirmed'             => 'New password and confirm password do not match.',
+            'new_password.regex'                 => 'New password must contain at least one uppercase letter, one number, and one special character.',
+            'new_password_confirmation.required' => 'Please confirm your new password.',
+        ]);
+
+        $user = $request->user();
+
+        // Current password check
+        if (!Hash::check($request->current_password, $user->password)) {
+            return $this->errorResponse('Current password is incorrect.', 422);
+        }
+
+        // New password same as current password check
+        if (Hash::check($request->new_password, $user->password)) {
+            return $this->errorResponse('New password cannot be the same as your current password.', 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return $this->successResponse(null, 'Password changed successfully.');
+    }
+
+    // POST /api/profile/photo - Upload profile photo
+    public function uploadProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'photo.required' => 'A profile photo is required.',
+            'photo.image'    => 'The file must be an image.',
+            'photo.mimes'    => 'Only JPG, JPEG, and PNG files are allowed.',
+            'photo.max'      => 'The photo size must not exceed 2MB.',
+        ]);
+
+        $user = $request->user();
+
+        // Purani photo delete karo agar hai
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        // Nai photo store karo
+        $path = $request->file('photo')->store('profile-photos', 'public');
+
+        $user->update([
+            'profile_photo' => $path,
+        ]);
+
+        return $this->successResponse([
+            'profile_photo'     => $path,
+            'profile_photo_url' => Storage::disk('public')->url($path),
+        ], 'Profile photo uploaded successfully.');
     }
 
     public function destroy($id)

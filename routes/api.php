@@ -24,6 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile
     Route::get('/profile', [AuthController::class, 'me']);
     Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::put('/profile/password', [UserController::class, 'changePassword']);
+    Route::post('/profile/photo', [UserController::class, 'uploadProfilePhoto']);
 
     // Notification Preferences
     Route::get('/user/notification-preferences', [AuthController::class, 'getNotificationPreferences']);
