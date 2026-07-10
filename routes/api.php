@@ -52,17 +52,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin + Manager only
     Route::middleware('role:admin,manager')->group(function () {
 
-        // Dashboard stats — specific routes PEHLE {id} se
+        // Dashboard stats
         Route::get('/tickets/stats', [TicketController::class, 'stats']);
         Route::get('/tickets/stats/by-department', [TicketController::class, 'statsByDepartment']);
         Route::get('/tickets/recent', [TicketController::class, 'recentTickets']);
 
-        // Departments list — dropdown ke liye (admin + manager dono)
+        // Departments list
         Route::get('/departments', [DepartmentController::class, 'index']);
 
         // Reports
         Route::get('/reports', [ReportController::class, 'index']);
         Route::get('/reports/export', [ReportController::class, 'export']);
+        Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf']);
 
         // Tickets — full CRUD
         Route::get('/tickets', [TicketController::class, 'index']);
@@ -78,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tickets/{id}/activity-logs', [ActivityLogController::class, 'index']);
     });
 
-    // Single ticket view — BAAD MEIN (admin+manager group ke baad)
+    // Single ticket view
     Route::get('/tickets/{id}', [TicketController::class, 'show']);
 
     // Admin only
@@ -92,7 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
         Route::get('/users/{id}/tickets', [UserController::class, 'tickets']);
 
-        // Departments (create/update/delete — admin only)
+        // Departments (create/update/delete)
         Route::post('/departments', [DepartmentController::class, 'store']);
         Route::get('/departments/{id}', [DepartmentController::class, 'show']);
         Route::put('/departments/{id}', [DepartmentController::class, 'update']);

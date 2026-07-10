@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -49,10 +50,8 @@ class ReportController extends Controller
         $callback = function () use ($tickets) {
             $file = fopen('php://output', 'w');
 
-            // CSV header row
             fputcsv($file, ['ID', 'Title', 'Status', 'Priority', 'Department', 'User', 'Assigned To', 'Created At']);
 
-            // CSV data rows
             foreach ($tickets as $ticket) {
                 fputcsv($file, [
                     $ticket->id,
@@ -72,26 +71,56 @@ class ReportController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    // GET /api/reports/export-pdf
+    public function exportPdf(Request $request)
+    {
+        $query = $this->buildFilteredQuery($request);
+        $total = $query->count();
+        $tickets = $query->orderBy('created_at', 'desc')->get();
+
+        // Applied filters summary
+        $filters = array_filter([
+            'Status'      => $request->status,
+            'Priority'    => $request->priority,
+            'Department'  => $request->department_id,
+            'Date From'   => $request->date_from,
+            'Date To'     => $request->date_to,
+        ]);
+
+        $data = [
+            'title'        => 'Employee Helpdesk — Ticket Report',
+            'generated_at' => now()->format('d M Y, h:i A'),
+            'filters'      => $filters,
+            'total'        => $total,
+            'tickets'      => $tickets,
+        ];
+
+        $pdf = Pdf::loadView('reports.tickets-pdf', $data)
+            ->setPaper('a4', 'landscape')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true);
+
+        $filename = 'tickets_report_' . now()->format('Ymd_His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     private function buildFilteredQuery(Request $request)
     {
         $query = Ticket::with(['user', 'assignedTo', 'department']);
 
-        // Department filter (uses existing index on department_id)
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
         }
 
-        // Status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Priority filter
         if ($request->filled('priority')) {
             $query->where('priority', $request->priority);
         }
 
-        // Date range filter (created_at)
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
