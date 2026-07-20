@@ -1,6 +1,20 @@
 <?php
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cross-Origin Resource Sharing (CORS) Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure your settings for cross-origin resource sharing
+    | or "CORS". This determines what cross-origin operations may execute
+    | in web browsers. You are free to adjust these settings as needed.
+    |
+    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    |
+    */
+
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
@@ -9,10 +23,15 @@ return [
         'http://localhost:3000',
         'http://localhost:5173',
         'http://localhost:8080',
+        'https://internship-frontened-project.vercel.app',
         'https://internship-frontened-project-crktpkd7h-logicloom.vercel.app',
     ],
 
-    'allowed_origins_patterns' => [],
+    // Wildcard pattern so future Vercel preview deployment URLs
+    // (which change on every deploy) are also allowed automatically.
+    'allowed_origins_patterns' => [
+        '#^https://internship-frontened-project(-[a-zA-Z0-9]+-logicloom)?\.vercel\.app$#',
+    ],
 
     'allowed_headers' => ['*'],
 
@@ -21,4 +40,5 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
+
 ];
