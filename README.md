@@ -7,6 +7,24 @@
 
 # Employee Helpdesk / Ticket Management System
 
+## 🌐 Live URLs
+
+| | URL |
+|---|---|
+| **Frontend** | https://internship-frontened-project.vercel.app |
+| **Backend API** | https://internship-backend-production.up.railway.app |
+
+---
+
+## 👥 Contributors
+
+| Name | Role |
+|---|---|
+| Jyoti Pandey | Backend Developer |
+| Harshita Gupta | Frontend Developer |
+
+---
+
 ## 1. Project Overview
 
 The **Employee Helpdesk & Ticket Management System** is a Laravel backend application that lets employees raise internal support tickets (IT, HR, Finance, and other departments) and lets managers and admins track, assign, and resolve them through a defined workflow.
